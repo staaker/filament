@@ -6,6 +6,7 @@ project(web-samples)
 # ==================================================================================================
 
 set(MATERIAL_SRCS
+        ../materials/sandboxLit.mat
         ../materials/bakedColor.mat)
 
 if (CMAKE_CROSSCOMPILING)
@@ -78,10 +79,14 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
 
 function(add_demo NAME)
     include_directories(${GENERATION_ROOT})
-    add_executable(${NAME} ${NAME}.cpp ../app/MeshIO.cpp filaweb.h)
+    add_executable(${NAME} ${NAME}.cpp
+            filamesh.h
+            filamesh.cpp
+            filaweb.h)
     add_dependencies(${NAME} sample_materials)
     target_link_libraries(${NAME} PRIVATE filament math filamat utils)
     copy_assets("." ${NAME}.html)
 endfunction()
 
 add_demo(suzanne)
+add_demo(triangle)

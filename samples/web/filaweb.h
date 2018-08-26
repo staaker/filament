@@ -60,10 +60,8 @@ public:
         mSwapChain = mEngine->createSwapChain(nullptr);
         mScene = mEngine->createScene();
         mRenderer = mEngine->createRenderer();
-        mCamera = mEngine->createCamera();
         mView = mEngine->createView();
         mView->setScene(mScene);
-        mView->setCamera(mCamera);
         setup(mEngine, mView, mScene);
     }
 
@@ -89,7 +87,6 @@ private:
     Scene* mScene = nullptr;
     View* mView = nullptr;
     filament::Renderer* mRenderer = nullptr;
-    filament::Camera* mCamera = nullptr;
     filament::SwapChain* mSwapChain = nullptr;
     AnimCallback mAnimation;
 };
@@ -114,9 +111,9 @@ static Asset getRawFile(const char* name) {
     // Move the data from JavaScript.
     uint8_t* data = new uint8_t[nbytes];
     EM_ASM({
-        var data = $0 >> 2;
+        var data = $0;
         var name = UTF8ToString($1);
-        HEAP32.set(assets[name].data, data);
+        HEAPU8.set(assets[name].data, data);
         assets[name].data = null;
     }, data, name);
     printf("%s: %d bytes\n", name, nbytes);

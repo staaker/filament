@@ -462,7 +462,7 @@ static void gui(filament::Engine* engine, filament::View*) {
     }
     if (g_currentMaterialModel == MATERIAL_MODEL_LIT) {
         materialInstance->setParameter("baseColor", RgbType::sRGB, g_color);
-        materialInstance->setParameter("roughness", g_roughness);
+        materialInstance->setParamete("roughness", g_roughness);
         materialInstance->setParameter("metallic", g_metallic);
         materialInstance->setParameter("reflectance", g_reflectance);
         materialInstance->setParameter("clearCoat", g_clearCoat);

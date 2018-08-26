@@ -58,7 +58,7 @@ function load_file(url) {
             resp.arrayBuffer().then(filedata => success({
                 kind: 'file',
                 name: url,
-                data: filedata
+                data: new Uint8Array(filedata)
             }));
         });
     });
