@@ -30,7 +30,7 @@ struct Mesh {
     utils::Entity renderable;
     filament::VertexBuffer* vertexBuffer = {};
     filament::IndexBuffer* indexBuffer = {};
-    filament::Texture* textures[5] = {};
+    filament::Texture* textures[5] = {}; // TODO move this out.
 };
 
 using MeshHandle = std::unique_ptr<Mesh>;

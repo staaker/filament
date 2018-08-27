@@ -81,11 +81,11 @@ function load_texture(url) {
             context2d.width = img.width;
             context2d.height = img.height;
             context2d.drawImage(img, 0, 0);
-            let imgdata = context2d.getImageData(0, 0, img.width, img.height).data.buffer;
+            var imgdata = context2d.getImageData(0, 0, img.width, img.height).data.buffer.slice();
             success({
                 kind: 'image',
                 name: url,
-                data: new Uint32Array(imgdata),
+                data: new Uint8Array(imgdata),
                 width: img.width,
                 height: img.height
             });

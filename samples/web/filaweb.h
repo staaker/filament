@@ -137,9 +137,10 @@ static Asset getTexture(const char* name) {
     // Move the data from JavaScript.
     uint8_t* texels = new uint8_t[nbytes];
     EM_ASM({
-        var texels = $0 >> 2;
+        var texels = $0;
         var name = UTF8ToString($1);
-        HEAP32.set(assets[name].data, texels);
+        // HEAPU8.set(assets[name].data.slice(0, 1048576/4), texels);
+        // HEAPU8.set(assets[name].data.slice(0, 1024), texels);
         assets[name].data = null;
     }, texels, name);
     printf("%s: %d x %d\n", name, dims[0], dims[1]);

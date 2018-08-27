@@ -38,8 +38,10 @@ using namespace math;
 using namespace std;
 using namespace utils;
 
+using MagFilter = TextureSampler::MagFilter;
+using WrapMode = TextureSampler::WrapMode;
+
 struct SuzanneApp {
-    filaweb::Asset meshAsset;
     MeshHandle meshHandle;
     Material* mat;
     MaterialInstance* mi;
@@ -48,34 +50,83 @@ struct SuzanneApp {
 };
 
 static constexpr uint8_t MATERIAL_LIT_PACKAGE[] = {
-    #include "generated/material/sandboxLit.inc"
+    #include "generated/material/texturedLit.inc"
 };
 
 static SuzanneApp app;
 
+static void setTexture(Engine& engine, Texture **result, filaweb::Asset& asset, string name,
+        TextureSampler const &sampler) {
+
+    const auto destructor = [](void* buffer, size_t size, void* user) {
+        auto asset = (filaweb::Asset*) user;
+        asset->data.reset();
+    };
+
+    Texture::PixelBufferDescriptor pb(
+            asset.data.get(), asset.nbytes, Texture::Format::RGBA, Texture::Type::UBYTE,
+            destructor, &asset);
+
+    auto texture = Texture::Builder()
+            .width(asset.width)
+            .height(asset.height)
+            .sampler(Texture::Sampler::SAMPLER_2D)
+            .format(Texture::InternalFormat::RGBA8)
+            .build(engine);
+
+    texture->setImage(engine, 0, std::move(pb));
+    app.mi->setParameter(name.c_str(), texture, sampler);
+    *result = texture;
+}
+
 void setup(Engine* engine, View* view, Scene* scene) {
 
+    // Create material.
     app.mat = Material::Builder()
             .package((void*) MATERIAL_LIT_PACKAGE, sizeof(MATERIAL_LIT_PACKAGE))
             .build(*engine);
-
     app.mi = app.mat->createInstance();
-    app.mi->setParameter("baseColor", float3{0.8f});
+    // app.mi->setParameter("baseColor", float3{0.8f});
     app.mi->setParameter("metallic", 1.0f);
     app.mi->setParameter("roughness", 0.7f);
     app.mi->setParameter("clearCoat", 0.0f);
 
-    app.meshAsset = filaweb::getRawFile("mesh");
-    const uint8_t* mdata = app.meshAsset.data.get();
+    // Create mesh.
+    static filaweb::Asset meshAsset = filaweb::getRawFile("mesh");
+    const uint8_t* mdata = meshAsset.data.get();
     const auto destructor = [](void* buffer, size_t size, void* user) {
-        app.meshAsset.data.reset();
+        auto asset = (filaweb::Asset*) user;
+        asset->data.reset();
     };
-    app.meshHandle = decodeMesh(*engine, mdata, 0, app.mi, destructor, &app);
-
+    app.meshHandle = decodeMesh(*engine, mdata, 0, app.mi, destructor, &meshAsset);
     scene->addEntity(app.meshHandle->renderable);
 
-    view->setClearColor({0.1, 0.125, 0.25, 1.0});
+    // Create textures.
+    TextureSampler sampler(MagFilter::LINEAR, WrapMode::CLAMP_TO_EDGE);
+    filament::Texture** meshTextures = &app.meshHandle->textures[0];
 
+    // TODO: use Texture::InternalFormat::SRGB8_A8
+    static auto albedo = filaweb::getTexture("albedo");
+    setTexture(*engine, &meshTextures[0], albedo, "albedo", sampler);
+
+    // TODO: use Texture::InternalFormat::R8
+    // static auto metallic = filaweb::getTexture("metallic");
+    // setTexture(*engine, &meshTextures[1], metallic, "metallic", sampler);
+/*
+    // TODO: use Texture::InternalFormat::R8
+    static auto roughness = filaweb::getTexture("roughness");
+    setTexture(*engine, &meshTextures[2], roughness, "roughness", sampler);
+
+    // TODO: use Texture::InternalFormat::RGBA8
+    static auto normal = filaweb::getTexture("normal");
+    setTexture(*engine, &meshTextures[3], normal, "normal", sampler);
+
+    // TODO: use Texture::InternalFormat::R8
+    static auto ao = filaweb::getTexture("ao");
+    setTexture(*engine, &meshTextures[4], ao, "ao", sampler);
+*/
+
+    // Create the sun.
     auto& em = EntityManager::get();
     app.sun = em.create();
     LightManager::Builder(LightManager::Type::SUN)
@@ -91,6 +142,7 @@ void setup(Engine* engine, View* view, Scene* scene) {
     app.cam->setExposure(16.0f, 1 / 125.0f, 100.0f);
     app.cam->lookAt(float3{0}, float3{0, 0, -4});
     view->setCamera(app.cam);
+    view->setClearColor({0.1, 0.125, 0.25, 1.0});
 };
 
 void animate(Engine* engine, View* view, double now) {
@@ -112,10 +164,6 @@ void gui(filament::Engine* engine, filament::View*) {
 // This is called only after the JavaScript layer has created a WebGL 2.0 context and all assets
 // have been downloaded.
 extern "C" void launch() {
-
-    auto albedo = filaweb::getTexture("albedo");
-    albedo.data.reset();
-
     filaweb::Application::get()->run(setup, gui, animate);
 }
 
