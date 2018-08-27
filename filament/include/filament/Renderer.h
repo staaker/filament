@@ -24,6 +24,7 @@
 #include <utils/compiler.h>
 
 #include <stdint.h>
+#include <driver/Handle.h>
 
 namespace filament {
 
@@ -134,7 +135,7 @@ public:
      * beginFrame(), endFrame(), View
      *
      */
-    void render(View const* view);
+    void render(View const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
 
     /**
      * Read-back the content of the SwapChain associated with this Renderer.

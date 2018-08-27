@@ -60,8 +60,8 @@ public:
     FEngine& getEngine() const noexcept { return mEngine; }
 
     // do all the work here!
-    void render(FView const* view);
-    void renderJob(ArenaScope& arena, FView* view);
+    void render(FView const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
+    void renderJob(ArenaScope& arena, FView* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
 
     bool beginFrame(FSwapChain* swapChain);
     void endFrame();

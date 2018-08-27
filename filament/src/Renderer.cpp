@@ -87,7 +87,7 @@ void FRenderer::terminate(FEngine& engine) {
     mFrameInfoManager.terminate();
 }
 
-void FRenderer::render(FView const* view) {
+void FRenderer::render(FView const* view, Handle<HwRenderTarget> viewRenderTarget) {
     SYSTRACE_CALL();
 
     assert(mSwapChain);
@@ -103,7 +103,7 @@ void FRenderer::render(FView const* view) {
         auto masterJob = js.setMasterJob(js.createJob());
 
         // execute the render pass
-        renderJob(rootArena, const_cast<FView*>(view));
+        renderJob(rootArena, const_cast<FView*>(view), viewRenderTarget);
 
         // make sure to flush the command buffer
         engine.flush();
@@ -114,7 +114,9 @@ void FRenderer::render(FView const* view) {
     }
 }
 
-void FRenderer::renderJob(ArenaScope& arena, FView* view) {
+void FRenderer::renderJob(ArenaScope& arena, FView* view,
+                          Handle<HwRenderTarget> viewRenderTarget
+        ) {
     FEngine& engine = getEngine();
     JobSystem& js = engine.getJobSystem();
     FEngine::DriverApi& driver = engine.getDriverApi();
@@ -181,7 +183,10 @@ void FRenderer::renderJob(ArenaScope& arena, FView* view) {
     }
 
     // FIXME: viewRenderTarget doesn't have a depth-buffer, so when skipping post-process, don't rely on it
-    const Handle<HwRenderTarget> viewRenderTarget = getRenderTarget();
+    if(viewRenderTarget.getId()==Handle<HwRenderTarget>::nullid) {
+        //const Handle<HwRenderTarget> viewRenderTarget = getRenderTarget();
+        viewRenderTarget = getRenderTarget();
+    }
     ColorPass::renderColorPass(engine, js,
             colorTarget ? colorTarget->target : viewRenderTarget, view, svp, commands);
 
@@ -365,8 +370,8 @@ Engine* Renderer::getEngine() noexcept {
     return &upcast(this)->getEngine();
 }
 
-void Renderer::render(View const* view) {
-    upcast(this)->render(upcast(view));
+void Renderer::render(View const* view, Handle<HwRenderTarget> viewRenderTarget) {
+    upcast(this)->render(upcast(view), viewRenderTarget);
 }
 
 bool Renderer::beginFrame(SwapChain* swapChain) {
