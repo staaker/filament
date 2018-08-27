@@ -25,6 +25,7 @@
 #include <utils/compiler.h>
 
 #include <stdint.h>
+#include <driver/Handle.h>
 
 namespace filament {
 
@@ -135,7 +136,7 @@ public:
      * beginFrame(), endFrame(), View
      *
      */
-    void render(View const* view);
+    void render(View const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
 
     /**
      * Flags used to configure the behavior of mirrorFrame().
