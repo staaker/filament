@@ -21,7 +21,7 @@ set(SRCS
 # ==================================================================================================
 include_directories(${PUBLIC_HDR_DIR})
 
-add_library(${TARGET} ${HDRS} ${SRCS})
+add_library(${TARGET} STATIC ${HDRS} ${SRCS})
 target_include_directories(${TARGET} PUBLIC ${PUBLIC_HDR_DIR})
 
 target_link_libraries(${TARGET} filabridge backend utils)
@@ -33,16 +33,16 @@ endif()
 # ==================================================================================================
 # Compiler flags
 # ==================================================================================================
-if (NOT WIN32)
-    target_compile_options(${TARGET} PRIVATE
-        -fvisibility=hidden
-        $<$<PLATFORM_ID:Linux>:-fPIC>
-    )
-endif()
+#if (NOT WIN32)
+#    target_compile_options(${TARGET} PRIVATE
+#        -fvisibility=hidden
+#        $<$<PLATFORM_ID:Linux>:-fPIC>
+#    )
+#endif()
 
 # ==================================================================================================
 # Installation
 # ==================================================================================================
 # We do not need filaflat headers in the install directory
-# install(DIRECTORY ${PUBLIC_HDR_DIR}/filaflat DESTINATION include)
-install(TARGETS ${TARGET} ARCHIVE DESTINATION lib/${DIST_DIR})
+#install(DIRECTORY ${PUBLIC_HDR_DIR}/filaflat DESTINATION include)
+#install(TARGETS ${TARGET} ARCHIVE DESTINATION lib/${DIST_DIR})
