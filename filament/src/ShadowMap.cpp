@@ -282,7 +282,7 @@ void ShadowMap::computeShadowCameraDirectional(
         // i.e. the -z axis (see: ortho)
         const float znear = -lsLightFrustum.max.z;
         const float zfar = -lsLightFrustum.min.z;
-        assert(znear < zfar);
+       // assert(znear < zfar);
 
         // The light's projection, ortho for directional lights, perspective otherwise
         const mat4f Mp = mat4f::ortho(-1, 1, -1, 1, znear, zfar);

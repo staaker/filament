@@ -99,6 +99,7 @@ FSkybox::FSkybox(FEngine& engine, const Builder& builder) noexcept
     mSkyboxMaterialInstance = material->createInstance();
 
     TextureSampler sampler(TextureSampler::MagFilter::LINEAR, TextureSampler::WrapMode::REPEAT);
+
     static_cast<MaterialInstance*>(mSkyboxMaterialInstance)->setParameter("skybox", mSkyboxTexture, sampler);
     static_cast<MaterialInstance*>(mSkyboxMaterialInstance)->setParameter("showSun", builder->mShowSun);
 
