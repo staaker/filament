@@ -54,8 +54,8 @@ void CubemapUtils::equirectangularToCubemap(Cubemap& dst, const Image& src) {
     const double r = width * 0.5 * M_1_PI;
 
     auto toRectilinear = [width, height](double3 s) -> double2 {
-        double xf = std::atan2(s.x, s.z) * M_1_PI;   // range [-1.0, 1.0]
-        double yf = std::asin(s.y) * (2 * M_1_PI);   // range [-1.0, 1.0]
+        double xf = std::atan2(-s.y, s.x) * M_1_PI;   // range [-1.0, 1.0]
+        double yf = std::asin(-s.z) * (2 * M_1_PI);   // range [-1.0, 1.0]
         xf = (xf + 1.0) * 0.5 * (width  - 1);        // range [0, width [
         yf = (1.0 - yf) * 0.5 * (height - 1);        // range [0, height[
         return double2(xf, yf);
