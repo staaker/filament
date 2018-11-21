@@ -169,7 +169,8 @@ public:
 
     template<typename T>
     static CommandKey select(T boolish) noexcept {
-        return boolish ? -1llu : 0llu;
+        static_assert(std::numeric_limits<CommandKey>::max() == -1llu, "I changed the behaviour of filament");
+        return boolish ? std::numeric_limits<CommandKey>::max() : 0llu;
     }
 
     struct PrimitiveInfo { // 24 bytes
