@@ -63,7 +63,7 @@ public:
     filament::math::float4 getShaderUserTime() const { return mShaderUserTime; }
 
     // do all the work here!
-    void render(FView const& view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
+    void render(FView const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
     void renderJob(ArenaScope& arena, FView& view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
 
     void mirrorFrame(FSwapChain* dstSwapChain, Viewport const& dstViewport, Viewport const& srcViewport,
