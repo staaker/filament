@@ -164,7 +164,7 @@ void RenderTargetPool::gc() noexcept {
         count--;
     }
 
-    if (UTILS_UNLIKELY(mDeepPurgeCountDown-- == 0)) {
+    if (UTILS_UNLIKELY(mDeepPurgeCountDown == 0 or mDeepPurgeCountDown-- == 0)) {
         mDeepPurgeCountDown = POOL_ENTRY_MAX_AGE;
         uint32_t age = mCacheAge - POOL_ENTRY_MAX_AGE;
         // remove all entries that are older than CACHE_ENTRY_MAX_AGE

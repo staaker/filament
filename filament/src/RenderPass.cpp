@@ -122,7 +122,9 @@ void RenderPass::recordDriverCommands(
         FMaterialInstance const* UTILS_RESTRICT previousMi = nullptr;
         FMaterial const* UTILS_RESTRICT ma = nullptr;
         Command const* UTILS_RESTRICT c;
-        for (c = commands.cbegin(); c->key != -1LLU; ++c) {
+        for (c = commands.cbegin(); c->key != std::numeric_limits<CommandKey>::max(); ++c) {
+            static_assert(-1LLU == std::numeric_limits<CommandKey>::max(), "I have changed the behaviour of filament");
+
             /*
              * Be careful when changing code below, this is the hot inner-loop
              */
