@@ -175,6 +175,8 @@ void RenderPass::recordDriverCommands(FEngine::DriverApi& driver, FScene& scene,
         FMaterialInstance const* UTILS_RESTRICT mi = nullptr;
         FMaterial const* UTILS_RESTRICT ma = nullptr;
         while (first != last) {
+            static_assert(-1LLU == std::numeric_limits<CommandKey>::max(), "I have changed the behaviour of filament");
+
             /*
              * Be careful when changing code below, this is the hot inner-loop
              */
