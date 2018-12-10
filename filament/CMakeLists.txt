@@ -195,7 +195,7 @@ add_custom_command(
 list(APPEND MATERIAL_BINS ${output_path})
 
 add_custom_target(filament-codegen
-        COMMAND resgen ${RESGEN_FLAGS} ${MATERIAL_BINS}
+        COMMAND test -e ${RESGEN_SOURCE} && echo "Shaders already generated..." || resgen ${RESGEN_FLAGS} ${MATERIAL_BINS}
         BYPRODUCTS ${RESGEN_SOURCE}
         DEPENDS resgen ${MATERIAL_BINS}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
