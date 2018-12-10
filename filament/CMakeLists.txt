@@ -194,10 +194,11 @@ add_custom_command(
 )
 list(APPEND MATERIAL_BINS ${output_path})
 
-add_custom_command(
-        OUTPUT ${RESGEN_OUTPUTS}
+add_custom_target(filament-codegen
         COMMAND resgen ${RESGEN_FLAGS} ${MATERIAL_BINS}
+        BYPRODUCTS ${RESGEN_SOURCE}
         DEPENDS resgen ${MATERIAL_BINS}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Aggregating compiled materials"
 )
 
@@ -226,7 +227,7 @@ include_directories(${GENERATION_ROOT})
 include_directories(src)
 
 # we're building a library
-add_library(${TARGET} STATIC ${PRIVATE_HDRS} ${PUBLIC_HDRS} ${SRCS} ${DATA_BINS})
+add_library(${TARGET} STATIC ${PUBLIC_HDRS} ${SRCS} ${DATA_BINS})
 
 # specify where the public headers of this library are
 target_include_directories(${TARGET} PUBLIC ${PUBLIC_HDR_DIR})
