@@ -53,7 +53,7 @@ set(RESOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 get_resgen_vars(${RESOURCE_DIR} shaders)
 
 add_custom_target(shader-codegen
-        COMMAND resgen --text --keep ${RESGEN_FLAGS} ${SHADERS}
+        COMMAND test -e ${RESGEN_SOURCE} && echo "Shaders already generated..." || resgen --test --keep ${RESGEN_FLAGS} ${SHADERS}
         BYPRODUCTS ${RESGEN_SOURCE}
         DEPENDS resgen ${SHADERS}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
