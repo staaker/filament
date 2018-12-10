@@ -85,12 +85,14 @@ if (DEFINED RESGEN_SOURCE_FLAGS)
     set_source_files_properties(${RESGEN_SOURCE} PROPERTIES COMPILE_FLAGS ${RESGEN_SOURCE_FLAGS})
 endif()
 
+file(WRITE ${DUMMY_SRC} "//Dummy source file")
 # ==================================================================================================
 # Include and target definitions
 # ==================================================================================================
 add_library(${TARGET} STATIC ${RESGEN_SOURCE})
 target_include_directories(${TARGET} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
+add_dependencies(${TARGET} shader-codegen)
 # ==================================================================================================
 # Installation
 # ==================================================================================================

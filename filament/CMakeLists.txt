@@ -228,6 +228,7 @@ include_directories(src)
 
 # we're building a library
 add_library(${TARGET} STATIC ${PUBLIC_HDRS} ${SRCS} ${DATA_BINS})
+add_dependencies(filament filament-codegen)
 
 # specify where the public headers of this library are
 target_include_directories(${TARGET} PUBLIC ${PUBLIC_HDR_DIR})
