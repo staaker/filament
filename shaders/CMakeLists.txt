@@ -74,9 +74,16 @@ set(RESOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 
 get_resgen_vars(${RESOURCE_DIR} shaders)
 
-add_custom_target(shader-codegen
-        COMMAND test -e ${RESGEN_SOURCE} && echo "Shaders already generated..." || resgen --test --keep ${RESGEN_FLAGS} ${SHADERS_MIN}
-        BYPRODUCTS ${RESGEN_SOURCE}
+#add_custom_target(shader-codegen
+#        COMMAND test -e ${RESGEN_SOURCE} && echo "Shaders already generated..." || ${CMAKE_BINARY_DIR}/resgen/resgen --text --keep ${RESGEN_FLAGS} ${SHADER_MIN}
+#        BYPRODUCTS ${RESGEN_SOURCE}
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#        COMMENT "Aggregating shaders"
+#)
+add_custom_command(
+        OUTPUT ${RESGEN_SOURCE}
+        COMMAND resgen --text --keep ${RESGEN_FLAGS} ${SHADERS_MIN}
+        DEPENDS resgen ${SHADERS_MIN}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Aggregating shaders"
 )
@@ -85,14 +92,15 @@ if (DEFINED RESGEN_SOURCE_FLAGS)
     set_source_files_properties(${RESGEN_SOURCE} PROPERTIES COMPILE_FLAGS ${RESGEN_SOURCE_FLAGS})
 endif()
 
-file(WRITE ${DUMMY_SRC} "//Dummy source file")
+#file(WRITE ${DUMMY_SRC} "//Dummy source file")
+
 # ==================================================================================================
 # Include and target definitions
 # ==================================================================================================
 add_library(${TARGET} STATIC ${RESGEN_SOURCE})
 target_include_directories(${TARGET} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-add_dependencies(${TARGET} shader-codegen)
+#add_dependencies(${TARGET} shader-codegen)
 # ==================================================================================================
 # Installation
 # ==================================================================================================

@@ -241,7 +241,6 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view,
     FrameGraphResource output = fg.importResource("viewRenderTarget",
             { .viewport = vp }, viewRenderTarget, vp.width, vp.height,
             view.getDiscardedTargetBuffers());
-    ColorPass::renderColorPass(engine, js,
 
     /*
      * Depth + Color passes
