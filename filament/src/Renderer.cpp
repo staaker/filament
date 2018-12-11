@@ -223,12 +223,11 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view,
     //        so when skipping post-process (which draws directly into it), we can't rely on it.
     const bool colorPassNeedsDepthBuffer = hasPostProcess;
 
-    if(viewRenderTarget.getId()==Handle<HwRenderTarget>::nullid) {
+    if(viewRenderTarget.getId() == Handle<HwRenderTarget>::nullid) {
         viewRenderTarget = getRenderTarget();
     }
     FrameGraphResource output = fg.importResource("viewRenderTarget",
                                                   { .viewport = vp }, viewRenderTarget, vp.width, vp.height);
-    ColorPass::renderColorPass(engine, js,
 
     /*
      * Depth + Color passes
