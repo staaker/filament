@@ -221,12 +221,12 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view,
         svp.left = svp.bottom = 0;
     }
 
-    // FIXME: viewRenderTarget doesn't have a depth-buffer, so when skipping post-process, don't rely on it
-    if(viewRenderTarget.getId()==Handle<HwRenderTarget>::nullid) {
-        //const Handle<HwRenderTarget> viewRenderTarget = getRenderTarget();
+    if(viewRenderTarget.getId() == Handle<HwRenderTarget>::nullid) {
         viewRenderTarget = getRenderTarget();
     }
-    ColorPass::renderColorPass(engine, js,
+
+    // FIXME: viewRenderTarget doesn't have a depth-buffer, so when skipping post-process, don't rely on it
+    ColorPass::renderColorPass(engine, js, jobFroxelize,
             colorTarget ? colorTarget->target : viewRenderTarget, view, svp, commands);
 
     /*
