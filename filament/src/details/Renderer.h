@@ -67,8 +67,8 @@ public:
     math::float4 getShaderUserTime() const { return mShaderUserTime; }
 
     // do all the work here!
-    void render(FView const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
-    void renderJob(ArenaScope& arena, FView& view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
+    void render(FView const* view, OffscreenTextureHandle viewRenderTarget);
+    void renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle viewRenderTarget);
 
     void mirrorFrame(FSwapChain* dstSwapChain, Viewport const& dstViewport, Viewport const& srcViewport,
                      MirrorFrameFlag flags);

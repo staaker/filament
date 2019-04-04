@@ -24,9 +24,6 @@
 
 #include <utils/compiler.h>
 
-#include <stdint.h>
-#include <driver/Handle.h>
-
 namespace filament {
 
 class Engine;
@@ -136,7 +133,9 @@ public:
      * beginFrame(), endFrame(), View
      *
      */
-    void render(View const* view, Handle<HwRenderTarget> viewRenderTarget=Handle<HwRenderTarget>());
+    using OffscreenTextureHandle = uint32_t;
+    void render(View const* view,
+                OffscreenTextureHandle viewRenderTarget = std::numeric_limits<OffscreenTextureHandle>::max());
 
     /**
      * Flags used to configure the behavior of mirrorFrame().
