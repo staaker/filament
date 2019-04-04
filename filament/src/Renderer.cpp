@@ -126,7 +126,7 @@ backend::TextureFormat FRenderer::getLdrFormat() const noexcept {
                                               : backend::TextureFormat::RGB8;
 }
 
-void FRenderer::render(FView const* view, Handle<HwRenderTarget> viewRenderTarget) {
+void FRenderer::render(FView const* view, OffscreenTextureHandle viewRenderTarget) {
     SYSTRACE_CALL();
 
     assert(mSwapChain);
@@ -152,9 +152,7 @@ void FRenderer::render(FView const* view, Handle<HwRenderTarget> viewRenderTarge
     }
 }
 
-void FRenderer::renderJob(ArenaScope& arena, FView& view,
-                          Handle<HwRenderTarget> viewRenderTarget
-        ) {
+void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle offscreenTexture) {
     FEngine& engine = getEngine();
     JobSystem& js = engine.getJobSystem();
     FEngine::DriverApi& driver = engine.getDriverApi();
@@ -235,8 +233,16 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view,
     //        so when skipping post-process (which draws directly into it), we can't rely on it.
     const bool colorPassNeedsDepthBuffer = hasPostProcess;
 
-    if(viewRenderTarget.getId()==Handle<backend::HwRenderTarget>::nullid) {
+    //Select default render target if no OffscreenTextureHandle override was given
+    backend::Handle<backend::HwRenderTarget> viewRenderTarget;
+    if(offscreenTexture == Handle<backend::HwRenderTarget>::nullid) {
+        static_assert(std::is_same<Renderer::OffscreenTextureHandle, Handle<backend::HwRenderTarget>::HandleId>::value,
+                "Public OffscreenTextureHandle no longer matches type of backend::HwRenderTarget");
         viewRenderTarget = getRenderTarget();
+    }
+    else {
+        //Draw to texture
+        viewRenderTarget = backend::Handle<backend::HwRenderTarget>(offscreenTexture);
     }
     FrameGraphResource output = fg.importResource("viewRenderTarget",
             { .viewport = vp }, viewRenderTarget, vp.width, vp.height,
@@ -581,7 +587,7 @@ Engine* Renderer::getEngine() noexcept {
     return &upcast(this)->getEngine();
 }
 
-void Renderer::render(View const* view, Handle<HwRenderTarget> viewRenderTarget) {
+void Renderer::render(View const* view, OffscreenTextureHandle viewRenderTarget) {
     upcast(this)->render(upcast(view), viewRenderTarget);
 }
 
