@@ -286,7 +286,12 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
             break;
     }
 
-    pass.setExecuteSync(jobFroxelize);
+    pass.setExecuteSync([&js, &view, &jobFroxelize](DriverApi& driver) {
+        if (jobFroxelize) {
+            js.waitAndRelease(jobFroxelize);
+            view.commitFroxels(driver);
+        }
+    });
     pass.generateSortedCommands(commandType);
 
 
