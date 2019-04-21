@@ -286,12 +286,6 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
             break;
     }
 
-    pass.setExecuteSync([&js, &view, &jobFroxelize](DriverApi& driver) {
-        if (jobFroxelize) {
-            js.waitAndRelease(jobFroxelize);
-            view.commitFroxels(driver);
-        }
-    });
     pass.generateSortedCommands(commandType);
 
 
@@ -324,17 +318,23 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
                 data.color = attachments.color;
                 data.depth = attachments.depth;
             },
-            [pass, &commands]
+            [&pass, jobFroxelize, &js, &view]
                     (FrameGraphPassResources const& resources,
                             ColorPassData const& data, DriverApi& driver) {
                 auto out = resources.getRenderTarget(data.color);
 
+                if (jobFroxelize) {
+                    auto sync = jobFroxelize;
+                    js.waitAndRelease(sync);
+                    view.commitFroxels(driver);
+                }
+
+                Slice<Command> const& commands = pass.getCommands();
                 pass.execute("Color Pass", out.target, out.params,
                         commands.begin(), commands.end());
-
-                commands.clear();
             });
 
+    jobFroxelize = nullptr;
     FrameGraphResource input = colorPass.getData().color;
     UTILS_UNUSED FrameGraphResource depth = colorPass.getData().depth;
 
@@ -378,6 +378,8 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
     fg.compile();
     //fg.export_graphviz(slog.d);
     fg.execute(driver);
+
+    commands.clear();
 
     recordHighWatermark(pass.getCommandsHighWatermark());
 }

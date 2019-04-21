@@ -208,7 +208,6 @@ public:
     void setGeometry(FScene& scene, utils::Range<uint32_t> vr) noexcept;
     void setCamera(const CameraInfo& camera) noexcept;
     void setRenderFlags(RenderFlags flags) noexcept;
-    void setExecuteSync(std::function<void(backend::DriverApi& driver)> sync) noexcept;
     void generateSortedCommands(CommandTypeFlags commandType) noexcept;
     void execute(const char* name,
             backend::Handle <backend::HwRenderTarget> renderTarget,
@@ -216,6 +215,7 @@ public:
             Command const* first, Command const* last) const noexcept;
 
     utils::GrowingSlice<Command>& getCommands() { return mCommands; }
+    utils::Slice<Command> const& getCommands() const { return mCommands; }
 
     size_t getCommandsHighWatermark() const noexcept {
         return mCommandsHighWatermark * sizeof(Command);
@@ -260,7 +260,6 @@ private:
     RenderFlags mFlags{};
     bool mPolygonOffsetOverride = false;
     backend::PolygonOffset mPolygonOffset{};
-    mutable std::function<void(backend::DriverApi&)> mSync;
     size_t mCommandsHighWatermark = 0;
 };
 
