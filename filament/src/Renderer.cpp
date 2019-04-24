@@ -245,7 +245,8 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
         viewRenderTarget = backend::Handle<backend::HwRenderTarget>(offscreenTexture);
     }
     FrameGraphResource output = fg.importResource("viewRenderTarget",
-                                                  { .viewport = vp }, viewRenderTarget, vp.width, vp.height);
+            { .viewport = vp }, viewRenderTarget, vp.width, vp.height,
+            view.getDiscardedTargetBuffers());
 
     /*
      * Depth + Color passes
