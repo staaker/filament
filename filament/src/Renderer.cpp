@@ -300,12 +300,13 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
             (FrameGraph::Builder& builder, ColorPassData& data) {
 
                 data.color = builder.createTexture("color buffer",
-                        { .width = svp.width, .height = svp.height, .format = hdrFormat });
+                        { .width = svp.width, .height = svp.height, .format = hdrFormat, .samples = msaa });
 
                 if (colorPassNeedsDepthBuffer) {
                     data.depth = builder.createTexture("depth buffer",
                             { .width = svp.width, .height = svp.height,
-                              .format = TextureFormat::DEPTH24 // TODO: fg should figure that out automatically
+                              .format = TextureFormat::DEPTH24,
+                              .samples = msaa
                             });
                 }
 
