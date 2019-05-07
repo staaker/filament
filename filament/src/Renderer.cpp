@@ -57,6 +57,10 @@ FRenderer::FRenderer(FEngine& engine) :
         mIsRGB8Supported(false),
         mPerRenderPassArena(engine.getPerRenderPassAllocator())
 {
+    FDebugRegistry& debugRegistry = engine.getDebugRegistry();
+    debugRegistry.registerProperty("d.ssao.enabled", &engine.debug.ssao.enabled);
+    debugRegistry.registerProperty("d.ssao.radius", &engine.debug.ssao.radius);
+    debugRegistry.registerProperty("d.ssao.bias", &engine.debug.ssao.bias);
 }
 
 void FRenderer::init() noexcept {
@@ -265,7 +269,7 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
 
     RenderPass::CommandTypeFlags commandType = getCommandType(view.getDepthPrepass());
 
-    constexpr bool USE_SSAO = true;
+    bool USE_SSAO = engine.debug.ssao.enabled;
     constexpr bool REUSE_SSAO_DEPTH = true;
     Command const* depthPassBegin = nullptr;
     Command const* depthPassEnd = nullptr;
@@ -343,7 +347,7 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
     };
 
     auto& colorPass = fg.addPass<ColorPassData>("Color Pass",
-            [&svp, hdrFormat, colorPassNeedsDepthBuffer, msaa, clearFlags, depth, ssao, sharedDepthBuffer]
+            [&svp, hdrFormat, colorPassNeedsDepthBuffer, msaa, clearFlags, depth, USE_SSAO, ssao, sharedDepthBuffer]
             (FrameGraph::Builder& builder, ColorPassData& data) {
 
                 if (USE_SSAO) {
@@ -375,16 +379,18 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
                 data.color = attachments.color;
                 data.depth = attachments.depth;
             },
-            [&pass, colorPassBegin, colorPassEnd, jobFroxelize, &js, &view]
+            [&pass, &ppm, colorPassBegin, colorPassEnd, jobFroxelize, &js, &view]
                     (FrameGraphPassResources const& resources,
                             ColorPassData const& data, DriverApi& driver) {
                 auto out = resources.getRenderTarget(data.color);
                 Handle<HwTexture> ssao;
                 if (data.ssao.isValid()) {
                     ssao = resources.getTexture(data.ssao);
-                    view.prepareSSAO(ssao);
-                    view.commitUniforms(driver);
+                } else {
+                    ssao = ppm.getNoSSAOTexture();
                 }
+                view.prepareSSAO(ssao);
+                view.commitUniforms(driver);
 
                 out.params.clearColor = view.getClearColor();
 
