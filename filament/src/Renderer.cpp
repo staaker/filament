@@ -344,6 +344,10 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
 
                 pass.execute(resources.getPassName(), out.target, out.params,
                         colorPassBegin, colorPassEnd);
+
+                // Unbind the SSAO sampler, as the frame graph will delete the texture at the end of
+                // the pass.
+                view.cleanupSSAO();
             });
 
     jobFroxelize = nullptr;
