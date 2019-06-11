@@ -71,8 +71,8 @@ public:
     void render(FView const* view, OffscreenTextureHandle viewRenderTarget);
     void renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle viewRenderTarget);
 
-    void mirrorFrame(FSwapChain* dstSwapChain, Viewport const& dstViewport, Viewport const& srcViewport,
-                     MirrorFrameFlag flags);
+    void copyFrame(FSwapChain* dstSwapChain, Viewport const& dstViewport,
+            Viewport const& srcViewport, CopyFrameFlag flags);
 
     bool beginFrame(FSwapChain* swapChain);
     void endFrame();
