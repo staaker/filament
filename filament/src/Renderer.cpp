@@ -243,7 +243,7 @@ void FRenderer::renderJob(ArenaScope& arena, FView& view, OffscreenTextureHandle
     if(offscreenTexture == Handle<backend::HwRenderTarget>::nullid) {
         static_assert(std::is_same<Renderer::OffscreenTextureHandle, Handle<backend::HwRenderTarget>::HandleId>::value,
                 "Public OffscreenTextureHandle no longer matches type of backend::HwRenderTarget");
-        viewRenderTarget = getRenderTarget();
+        viewRenderTarget = getRenderTarget(view);
     }
     else {
         //Draw to texture
